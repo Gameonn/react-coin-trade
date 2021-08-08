@@ -42,7 +42,7 @@ const Coins = (props) => {
           <Card>
             <ul>
               {coins.map((coin, i) => (
-                <Coin key={i} name={coin.Name} price={coin.Price_usd} data={coin}  />
+                <Coin key={i} id={'coin-'+i} name={coin.Name} price={coin.Price_usd} data={coin}  />
               ))}
             </ul>
           </Card>

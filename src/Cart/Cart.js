@@ -1,37 +1,43 @@
-import { useContext, useState } from 'react';
+import { useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 
 import Modal from '../UI/Modal';
 import CartItem from './CartItem';
 import classes from './Cart.module.css';
-import CartContext from '../store/cart-context';
+import { ADD_ITEM, REMOVE_ITEM, CLEAR_CART } from '../store/actionTypes';
 import Checkout from './Checkout';
 
-const Cart = ({onClose, items}) => {
-    const cartCtx = useContext(CartContext);
+const Cart = ({onClose}) => {
+    // const cartCtx = useContext(CartContext);
+    const dispatch = useDispatch();
+    const items = useSelector(state => state.items);
+    const amount = useSelector(state => state.totalAmount);
+    const totalAmount = amount.toFixed(2);
     const [isCheckout, setIsCheckout] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [didSubmit, setDidSubmit] = useState(false);
-    const totalAmount = `$${cartCtx.totalAmount.toFixed(2)}`;
-    const hasItems = cartCtx.items.length > 0;
+    const hasItems = items.length > 0;
+    console.log(items, 'items');
 
     const cartItemRemoveHandler = id => {
-      return cartCtx.removeItem(id);
+      console.log(id, 'remove');
+      dispatch({type: REMOVE_ITEM, 'payload': {id, quantity: 0.2}});
     }
 
-    const cartItemAddHandler = item => {
-      return cartCtx.addItem({...item, amount: 1});
+    const cartItemAddHandler = ({ id, name, price }) => {
+      dispatch({type: ADD_ITEM, 'payload': {id, name, price, quantity: 0.2}});
     }
 
     const cartItems = (
         <ul className={classes['cart-items']}>
-          {cartCtx.items.map((item) => (
+          {items.map((item) => (
             <CartItem
               key={item.id}
               name={item.name}
-              amount={item.amount}
+              amount={item.quantity}
               price={item.price}
-              onRemove={cartItemRemoveHandler.bind(null, item.id)}
-              onAdd={cartItemAddHandler.bind(null, item)}
+              onRemove={() => cartItemRemoveHandler(item.id)}
+              onAdd={() => cartItemAddHandler(item)}
             />
           ))}
         </ul>
@@ -40,11 +46,11 @@ const Cart = ({onClose, items}) => {
     const submitOrderHandler = async (userData) => {
       setIsSubmitting(true);
       await fetch('https://react-my-burger-ef74e.firebaseio.com/cartData.json',{
-        method: 'POST', body: JSON.stringify({user: userData, items: cartCtx.items})
+        method: 'POST', body: JSON.stringify({user: userData, items})
       })
       setIsSubmitting(false);
       setDidSubmit(true);
-      cartCtx.clearCart();
+      dispatch({type: CLEAR_CART});
     };
     
     const cartContent = (
