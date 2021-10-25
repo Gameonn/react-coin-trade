@@ -6,7 +6,6 @@ const initialState = {
 }
 
 const reducer = (state = initialState, action) => {
-    console.log(action, 'action****');
     if(action.type === ADD_ITEM) {
         const { price, quantity, id } = action.payload;
         const updatedTotalAmount = state.totalAmount + price*quantity;

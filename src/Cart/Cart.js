@@ -8,7 +8,6 @@ import { ADD_ITEM, REMOVE_ITEM, CLEAR_CART } from '../store/actionTypes';
 import Checkout from './Checkout';
 
 const Cart = ({onClose}) => {
-    // const cartCtx = useContext(CartContext);
     const dispatch = useDispatch();
     const items = useSelector(state => state.items);
     const amount = useSelector(state => state.totalAmount);
@@ -17,10 +16,8 @@ const Cart = ({onClose}) => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [didSubmit, setDidSubmit] = useState(false);
     const hasItems = items.length > 0;
-    console.log(items, 'items');
 
     const cartItemRemoveHandler = id => {
-      console.log(id, 'remove');
       dispatch({type: REMOVE_ITEM, 'payload': {id, quantity: 0.2}});
     }
 
